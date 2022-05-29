@@ -5,6 +5,7 @@ import pygame
 
 from settings import Settings
 from game_stats import GameStats
+from scoreboard import Scoreboard
 from button import Button 
 from ship import Ship
 from bullet import Bullet
@@ -22,8 +23,11 @@ class AlienInvasion:
 
         pygame.display.set_caption("Alien Invasion")
 
-        # Create an instance to  store game statistics.
+        # Create an instance to store game statistics,
+        # and create a scoreboard
+
         self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
@@ -67,10 +71,11 @@ class AlienInvasion:
         if button_clicked and not self.stats.game_active:
             # Reset the game settings.
             self.settings.initialize_dynamic_settings()
-            
+
             # Reset the game statistics.
             self.stats.reset_stats()
             self.stats.game_active = True
+            self.sb.prep_score()
 
             # Get rid of any remaining aliens and bullets.
             self.aliens.empty()
@@ -122,7 +127,11 @@ class AlienInvasion:
         """Respond to bullet-alien collisions."""
         # Remove any bullets and aliens that have collided
         collisions = pygame.sprite.groupcollide(self.bullets,self.aliens,False,True)
-        if not self.aliens:
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alien_points * len(aliens)
+            self.sb.prep_score()
+            self.sb.check_high_score()
             # Destroy existing bullets and create new fleet
             self.bullets.empty()
             self._create_fleet()
@@ -212,7 +221,7 @@ class AlienInvasion:
                 self._ship_hit()
                 break
 
-
+    # check this function
     def _update_screen(self):
         """Update images on the screen ,and flip to the new screen."""
         self.screen.fill(self.settings.bg_color)
@@ -222,6 +231,9 @@ class AlienInvasion:
         self.aliens.draw(self.screen)
         if not self.stats.game_active:
             self.play_button.draw_button()
+
+        # Draw the score information
+        self.sb.show_score()
 
         #make the most recently drawn screen visible
         pygame.display.flip()
