@@ -1,6 +1,6 @@
 import sys 
 from time import sleep
-#me
+
 import pygame
 
 from settings import Settings
@@ -21,7 +21,7 @@ class AlienInvasion:
 
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
 
-        pygame.display.set_caption("Alien Invasion")
+        pygame.display.set_caption("Alien Invasion by Oscar")
 
         # Create an instance to store game statistics,
         # and create a scoreboard
@@ -85,7 +85,7 @@ class AlienInvasion:
 
             # Create a new fleet and center the ship
             self._create_fleet()
-            self._create_alien()
+            self.ship.center_ship()
 
             # Hide the mouse cursor
             pygame.mouse.set_visible(True)
@@ -205,7 +205,7 @@ class AlienInvasion:
     def _create_alien(self, alien_number, row_number):
         """Create an alien and place it in a row."""
         alien = Alien(self)
-        alien_width, alien_height = alien.rect.size
+        alien_width,alien_height = alien.rect.size
         alien.x = alien_width + 2 * alien_width * alien_number
         alien.rect.x = alien.x
         alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
@@ -249,7 +249,7 @@ class AlienInvasion:
         # Draw the score information
         if not self.stats.game_active:
             self.play_button.draw_button()
-            
+
         #make the most recently drawn screen visible
         pygame.display.flip()
 
